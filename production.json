@@ -1,0 +1,206 @@
+[
+  {
+    "id": "prod-001",
+    "categoria": "TALENTO Y MODELOS",
+    "item": "Actriz / Modelo femenina — Pasajera principal",
+    "notas": "Cant.: 1. Debe saber manejar el teléfono naturalmente. Ropa casual urbana."
+  },
+  {
+    "id": "prod-002",
+    "categoria": "TALENTO Y MODELOS",
+    "item": "Actor / Modelo masculino — Conductor principal",
+    "notas": "Cant.: 1. Que sepa manejar. Ropa casual limpia. Sin logos visibles."
+  },
+  {
+    "id": "prod-003",
+    "categoria": "TALENTO Y MODELOS",
+    "item": "Extras femeninas — Amigas en cafetería",
+    "notas": "Cant.: 2–3. Solo fondo. No hablan a cámara. Deben lucir naturales conversando."
+  },
+  {
+    "id": "prod-004",
+    "categoria": "TALENTO Y MODELOS",
+    "item": "Miembro del equipo — Manos en teclado",
+    "notas": "Cant.: 1. No necesita salir con cara. Solo manos y perfil."
+  },
+  {
+    "id": "prod-005",
+    "categoria": "TALENTO Y MODELOS",
+    "item": "Equipo / Fundadores — Escena de oficina",
+    "notas": "Cant.: 2–3. Personas reales del equipo. No actores. Actitud natural trabajando."
+  },
+  {
+    "id": "prod-006",
+    "categoria": "VEHÍCULOS",
+    "item": "Carro principal — rol de Limmu (conductor)",
+    "notas": "Cant.: 1. Carro sedán o SUV en buen estado. Limpio por dentro y fuera. Sin stickers de otras marcas."
+  },
+  {
+    "id": "prod-007",
+    "categoria": "VEHÍCULOS",
+    "item": "Carros de tráfico — fondo en movimiento",
+    "notas": "Cant.: 1–2. No necesitan ser específicos. Solo para dar vida al entorno urbano."
+  },
+  {
+    "id": "prod-008",
+    "categoria": "UBICACIONES",
+    "item": "Calle / Avenida principal con tráfico real",
+    "notas": "Cant.: 1. Reconocible para la ciudad. Acera amplia. Permiso si es necesario."
+  },
+  {
+    "id": "prod-009",
+    "categoria": "UBICACIONES",
+    "item": "Cafetería con buena luz natural",
+    "notas": "Cant.: 1. Luz natural preferida. Ambiente cálido. Coordinar horario de menor tráfico."
+  },
+  {
+    "id": "prod-010",
+    "categoria": "UBICACIONES",
+    "item": "Espacio de trabajo / Oficina del equipo",
+    "notas": "Cant.: 1. Espacio real del equipo. Ordenado pero no estéril. Pantallas visibles."
+  },
+  {
+    "id": "prod-011",
+    "categoria": "UBICACIONES",
+    "item": "Zona urbana exterior para escenas del carro",
+    "notas": "Cant.: 1. Puede ser el mismo sector que la calle principal. Coordinar con conductor."
+  },
+  {
+    "id": "prod-012",
+    "categoria": "EQUIPOS TÉCNICOS DE GRABACIÓN",
+    "item": "Trípode",
+    "notas": "Cant.: 1. Con cabeza fluida para pequeños ajustes de encuadre."
+  },
+  {
+    "id": "prod-013",
+    "categoria": "EQUIPOS TÉCNICOS DE GRABACIÓN",
+    "item": "Teléfono (iPhone 14+ o similar)",
+    "notas": "Cant.: 1–2. Para screen records usar el mismo teléfono de los modelos si posible."
+  },
+  {
+    "id": "prod-014",
+    "categoria": "EQUIPOS TÉCNICOS DE GRABACIÓN",
+    "item": "Phone holder / Soporte para teléfono en carro",
+    "notas": "Cant.: 1. Soporte de ventosa o rejilla. Que el teléfono quede visible y estable."
+  },
+  {
+    "id": "prod-015",
+    "categoria": "EQUIPOS TÉCNICOS DE GRABACIÓN",
+    "item": "Micrófono de solapa o shotgun",
+    "notas": "Cant.: 1. Esencial para voz en off y cámara."
+  },
+  {
+    "id": "prod-016",
+    "categoria": "EQUIPOS TÉCNICOS DE GRABACIÓN",
+    "item": "Reflector / Difusor de luz portátil",
+    "notas": "Cant.: 1. Para suavizar sombras en planos de cara."
+  },
+  {
+    "id": "prod-017",
+    "categoria": "EQUIPOS TÉCNICOS DE GRABACIÓN",
+    "item": "Power bank",
+    "notas": "Cant.: 1. Power bank para teléfonos."
+  },
+  {
+    "id": "prod-018",
+    "categoria": "PROPS Y UTILERÍA",
+    "item": "Laptop, monitores, escritorios",
+    "notas": "Cant.: 1. Pantalla escritorios limpios"
+  },
+  {
+    "id": "prod-019",
+    "categoria": "PROPS Y UTILERÍA",
+    "item": "Teléfonos con app Limmu instalada y activa",
+    "notas": "Cant.: 2. Un teléfono pasajero y uno conductor. App funcional con datos de prueba."
+  },
+  {
+    "id": "prod-020",
+    "categoria": "PROPS Y UTILERÍA",
+    "item": "Tazas de café / bebidas para mesa de cafetería",
+    "notas": "Cant.: 2–3. Coordinar con la cafetería. Que las bebidas se vean naturales en la mesa."
+  },
+  {
+    "id": "prod-021",
+    "categoria": "VESTUARIO Y APARIENCIA",
+    "item": "Actriz pasajera — look urbano casual",
+    "notas": "Cant.: 1 outfit. Ropa neutra, colores tierra o neutros. Sin logos visibles. Look coherente en todas las tomas."
+  },
+  {
+    "id": "prod-022",
+    "categoria": "VESTUARIO Y APARIENCIA",
+    "item": "Modelo conductor — look casual limpio",
+    "notas": "Cant.: 1 outfit. Camisa o camiseta limpia. Sin logos. Puede ser manga larga o corta según clima."
+  },
+  {
+    "id": "prod-023",
+    "categoria": "VESTUARIO Y APARIENCIA",
+    "item": "Extras cafetería — looks variados urbanos",
+    "notas": "Cant.: 1 outfit. Ropa casual variada. No uniforme. Que se vean como amigos reales."
+  },
+  {
+    "id": "prod-024",
+    "categoria": "TECNOLOGÍA Y APP",
+    "item": "App Limmu Pasajero instalada y funcionando",
+    "notas": "Cant.: 1. Con datos de prueba reales: dirección, precio, conductor ficticio. UI limpia."
+  },
+  {
+    "id": "prod-025",
+    "categoria": "TECNOLOGÍA Y APP",
+    "item": "App Limmu Driver instalada y funcionando",
+    "notas": "Cant.: 1. Con solicitud de viaje ficticia activa. Notificación de nuevo viaje lista."
+  },
+  {
+    "id": "prod-026",
+    "categoria": "TECNOLOGÍA Y APP",
+    "item": "Terminal con deploy real para grabar",
+    "notas": "Cant.: 1. Preparar el comando con anticipación. Tener listo el momento exacto del ENTER."
+  },
+  {
+    "id": "prod-027",
+    "categoria": "TECNOLOGÍA Y APP",
+    "item": "Laptop con IDE abierto y código de Limmu",
+    "notas": "Cant.: 1. Código real preferido. Scroll preparado. Pantalla brillante y legible."
+  },
+  {
+    "id": "prod-028",
+    "categoria": "LOGÍSTICA Y ORGANIZACIÓN DEL DÍA",
+    "item": "Call sheet impreso o digital para todo el equipo",
+    "notas": "Cant.: 1. Horarios, ubicaciones, modelos por escena, orden del día."
+  },
+  {
+    "id": "prod-029",
+    "categoria": "LOGÍSTICA Y ORGANIZACIÓN DEL DÍA",
+    "item": "Guión y storyboards impresos o en tablet",
+    "notas": "Cant.: 1. Shot list impreso por ubicación para no perder tiempo entre tomas."
+  },
+  {
+    "id": "prod-030",
+    "categoria": "LOGÍSTICA Y ORGANIZACIÓN DEL DÍA",
+    "item": "Coordinador/a de producción en set",
+    "notas": "Cant.: 1. Alguien responsable de tiempos, modelos y logística. No el camarógrafo."
+  },
+  {
+    "id": "prod-031",
+    "categoria": "LOGÍSTICA Y ORGANIZACIÓN DEL DÍA",
+    "item": "Permiso o acuerdo con la cafetería",
+    "notas": "Coordinar horario (idealmente antes de apertura o en hora de menor tráfico)."
+  },
+  {
+    "id": "prod-032",
+    "categoria": "LOGÍSTICA Y ORGANIZACIÓN DEL DÍA",
+    "item": "Agua y snacks para el equipo",
+    "notas": "Jornada larga. Mantener energía del equipo y modelos."
+  },
+  {
+    "id": "prod-033",
+    "categoria": "LOGÍSTICA Y ORGANIZACIÓN DEL DÍA",
+    "item": "Backup de todas las grabaciones al final del día",
+    "notas": "Copiar tarjetas SD a disco duro externo antes de terminar el día."
+  },
+  {
+    "id": "prod-034",
+    "categoria": "LOGÍSTICA Y ORGANIZACIÓN DEL DÍA",
+    "item": "Hora de salida recomendada para exteriores",
+    "notas": "Amanecer o 2 horas antes del atardecer para luz dorada. Evitar mediodía."
+  }
+]

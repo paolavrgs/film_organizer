@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>On Set</title>
+<style>
+  :root{
+    --bg:#0D1117;
+    --card:#ffffff;
+    --accent:#E8C547;
+    --text:#0D1117;
+    --muted:#6b7280;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);
+    color:#fff;
+    display:flex;
+    justify-content:center;
+  }
+  #app{
+    width:100%;
+    max-width:430px;
+    min-height:100vh;
+    background:var(--bg);
+    display:flex;
+    flex-direction:column;
+  }
+  .session-bar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:10px 16px;
+    background:#10151d;
+    border-bottom:1px solid #1c2530;
+    position:sticky;
+    top:0;
+    z-index:6;
+  }
+  .session-bar .session-name{
+    font-size:13px;
+    font-weight:700;
+    color:#fff;
+    cursor:pointer;
+    max-width:70%;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .session-bar .session-name::after{
+    content:" ✎";
+    color:var(--muted);
+    font-size:11px;
+  }
+  .session-bar .session-date{
+    font-size:11px;
+    color:var(--muted);
+    font-weight:600;
+    flex-shrink:0;
+  }
+
+  header{
+    padding:16px 16px 8px;
+    position:sticky;
+    top:33px;
+    background:var(--bg);
+    z-index:5;
+  }
+  header h1{
+    margin:0;
+    font-size:22px;
+    letter-spacing:1px;
+  }
+  header h1 span{color:var(--accent);}
+  header .subtitle{
+    color:var(--muted);
+    font-size:13px;
+    margin-top:2px;
+  }
+
+  main{
+    flex:1;
+    padding:8px 12px 90px;
+    overflow-y:auto;
+  }
+
+  .view{display:none;}
+  .view.active{display:block;}
+
+  .card{
+    background:var(--card);
+    color:var(--text);
+    border-radius:14px;
+    padding:14px;
+    margin-bottom:12px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.25);
+    transition:opacity .2s ease, transform .15s ease;
+  }
+  .card.completed{
+    opacity:0.55;
+  }
+  .card.completed .card-title{
+    text-decoration:line-through;
+  }
+  .card-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:10px;
+  }
+  .card-title{
+    font-weight:700;
+    font-size:15px;
+    margin:0 0 4px;
+  }
+  .card-meta{
+    font-size:12px;
+    color:var(--muted);
+    margin:0 0 6px;
+  }
+  .badge{
+    display:inline-block;
+    background:#f1f1f1;
+    border-radius:6px;
+    padding:2px 8px;
+    font-size:11px;
+    font-weight:600;
+    margin:2px 4px 2px 0;
+    color:#333;
+  }
+  .badge.duration{
+    background:var(--accent);
+    color:#0D1117;
+  }
+  .card-desc{
+    font-size:13px;
+    line-height:1.4;
+    margin:6px 0 0;
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+  }
+  .card-row{
+    font-size:12px;
+    color:var(--muted);
+    margin:2px 0;
+  }
+  .card-row b{color:var(--text);}
+  .card-footer{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-top:8px;
+    gap:8px;
+  }
+  .card-footer .badges{display:flex;flex-wrap:wrap;gap:4px;}
+  .clip-num{
+    color:var(--accent);
+    font-weight:800;
+    font-size:14px;
+    margin-right:6px;
+  }
+  .ubicacion{
+    color:var(--muted);
+    font-size:12px;
+    font-weight:400;
+  }
+  .card-audio{
+    font-size:12px;
+    font-style:italic;
+    color:var(--muted);
+    margin:6px 0 0;
+    border-left:3px solid var(--accent);
+    padding-left:8px;
+  }
+  .card-notes{
+    font-size:12px;
+    color:#444;
+    margin:6px 0 0;
+    background:#f8f8f8;
+    padding:6px 8px;
+    border-radius:8px;
+  }
+
+  /* Checkbox */
+  .check{
+    flex-shrink:0;
+    width:26px;
+    height:26px;
+    border-radius:8px;
+    border:2px solid #ccc;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    background:#fff;
+    transition:all .15s ease;
+  }
+  .check.checked{
+    background:var(--accent);
+    border-color:var(--accent);
+  }
+  .check svg{
+    width:16px;
+    height:16px;
+    opacity:0;
+    transition:opacity .15s ease;
+  }
+  .check.checked svg{opacity:1;}
+
+  /* Production checklist */
+  .reset-btn{
+    width:100%;
+    font-family:inherit;
+    font-size:13px;
+    font-weight:700;
+    color:#ff6b6b;
+    background:#1c2530;
+    border:none;
+    border-radius:10px;
+    padding:10px;
+    margin-bottom:12px;
+    cursor:pointer;
+  }
+  .group{
+    background:var(--card);
+    color:var(--text);
+    border-radius:14px;
+    margin-bottom:10px;
+    overflow:hidden;
+  }
+  .group-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:14px;
+    cursor:pointer;
+    user-select:none;
+  }
+  .group-header .name{
+    font-size:14px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+  }
+  .group-header .count{
+    font-size:12px;
+    font-weight:700;
+    color:var(--muted);
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .group-header .chevron{
+    width:18px;
+    height:18px;
+    stroke:var(--muted);
+    fill:none;
+    stroke-width:2.2;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+    transition:transform .2s ease;
+  }
+  .group.collapsed .chevron{
+    transform:rotate(-90deg);
+  }
+  .group-items{
+    display:flex;
+    flex-direction:column;
+  }
+  .group.collapsed .group-items{
+    display:none;
+  }
+  .check-row{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:8px 14px;
+    border-top:1px solid #f0f0f0;
+  }
+  .check-row .check{
+    width:30px;
+    height:30px;
+    flex-shrink:0;
+  }
+  .check-row .row-tap{
+    flex:1;
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    min-height:44px;
+    cursor:pointer;
+    padding:7px 0;
+  }
+  .check-row .row-title{
+    font-size:14px;
+    font-weight:700;
+    line-height:1.35;
+  }
+  .check-row.checked .row-title{
+    text-decoration:line-through;
+    font-weight:400;
+    color:var(--muted);
+  }
+  .check-row .row-notas{
+    font-size:12px;
+    color:var(--muted);
+    margin-top:2px;
+    line-height:1.35;
+  }
+
+  /* progress bar */
+  .progress-wrap{
+    margin:6px 0 10px;
+  }
+  .progress-bar{
+    height:6px;
+    background:#1c2530;
+    border-radius:4px;
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    background:var(--accent);
+    width:0%;
+    transition:width .25s ease;
+  }
+  .progress-label{
+    font-size:11px;
+    color:var(--muted);
+  }
+  .progress-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-top:4px;
+    gap:8px;
+  }
+  .filter-btn{
+    font-family:inherit;
+    font-size:11px;
+    font-weight:600;
+    color:var(--bg);
+    background:#8b96a5;
+    border:none;
+    border-radius:14px;
+    padding:5px 10px;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:background .15s ease;
+  }
+  .filter-btn.active{
+    background:var(--accent);
+  }
+
+  /* Detail / carousel overlay (fullscreen) */
+  .overlay{
+    position:fixed;
+    inset:0;
+    background:var(--bg);
+    display:none;
+    justify-content:center;
+    z-index:50;
+    transform:translateY(100%);
+    transition:transform .28s ease;
+  }
+  .overlay.open{
+    display:flex;
+    transform:translateY(0);
+  }
+  .detail-sheet{
+    width:100%;
+    max-width:430px;
+    height:100%;
+    background:var(--bg);
+    color:#fff;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+  }
+  .detail-topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:14px 14px 8px;
+    flex-shrink:0;
+  }
+  .detail-topbar .pos{
+    font-size:13px;
+    color:var(--muted);
+    font-weight:700;
+  }
+  .detail-dots{
+    display:flex;
+    gap:5px;
+    flex-wrap:wrap;
+    max-width:60%;
+    justify-content:center;
+  }
+  .detail-dots .dot{
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    background:#2a313c;
+  }
+  .detail-dots .dot.active{
+    background:var(--accent);
+  }
+  .detail-close{
+    background:#1c2530;
+    border:none;
+    border-radius:50%;
+    width:32px;
+    height:32px;
+    font-size:16px;
+    line-height:1;
+    cursor:pointer;
+    color:#fff;
+    flex-shrink:0;
+  }
+
+  .detail-viewport{
+    flex:1;
+    overflow:hidden;
+    position:relative;
+  }
+  .detail-track{
+    display:flex;
+    height:100%;
+    transition:transform .25s ease;
+  }
+  .detail-page{
+    flex:0 0 100%;
+    width:100%;
+    height:100%;
+    overflow-y:auto;
+    box-sizing:border-box;
+    padding:4px 16px 24px;
+  }
+
+  .detail-navbar{
+    display:flex;
+    gap:10px;
+    padding:10px 16px;
+    padding-bottom:calc(10px + env(safe-area-inset-bottom));
+    flex-shrink:0;
+    border-top:1px solid #1c2530;
+  }
+  .detail-arrow{
+    flex:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    background:#1c2530;
+    border:none;
+    color:#fff;
+    padding:13px;
+    border-radius:12px;
+    font-family:inherit;
+    font-size:14px;
+    font-weight:700;
+    letter-spacing:1px;
+    cursor:pointer;
+  }
+  .detail-arrow svg{
+    width:18px;
+    height:18px;
+    stroke:currentColor;
+    fill:none;
+    stroke-width:2.2;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+  }
+  .detail-arrow:disabled{opacity:0.3;cursor:default;}
+
+  /* Header block */
+  .detail-headblock{
+    background:var(--accent);
+    color:var(--bg);
+    border-radius:14px;
+    padding:14px;
+    margin:6px 0 14px;
+  }
+  .detail-headblock .clip-num{
+    color:var(--bg);
+    font-size:13px;
+    font-weight:800;
+    letter-spacing:1px;
+    margin:0 0 4px;
+    display:block;
+  }
+  .detail-headblock .pieza{
+    font-size:20px;
+    font-weight:800;
+    margin:0 0 4px;
+    line-height:1.25;
+  }
+  .detail-headblock .ubicacion{
+    font-size:13px;
+    color:var(--bg);
+    opacity:.75;
+    font-weight:600;
+  }
+
+  .detail-section{
+    background:var(--card);
+    color:var(--text);
+    border-radius:14px;
+    padding:12px 14px;
+    margin-bottom:10px;
+  }
+  .detail-section .badges-row{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:6px;
+    margin-bottom:6px;
+  }
+  .detail-field{
+    margin:8px 0;
+  }
+  .detail-field:first-child{margin-top:0;}
+  .detail-field:last-child{margin-bottom:0;}
+  .detail-field .label{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+    color:var(--muted);
+    font-weight:700;
+    margin:0 0 2px;
+  }
+  .detail-field .value{
+    font-size:14px;
+    line-height:1.5;
+    margin:0;
+    white-space:pre-wrap;
+  }
+
+  .detail-complete{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    width:100%;
+    margin-top:6px;
+    padding:14px;
+    border-radius:14px;
+    border:none;
+    font-family:inherit;
+    font-size:15px;
+    font-weight:800;
+    cursor:pointer;
+    background:var(--card);
+    color:var(--text);
+    transition:background .15s ease, color .15s ease;
+  }
+  .detail-complete .check{pointer-events:none;}
+  .detail-complete.checked{
+    background:var(--accent);
+    color:var(--bg);
+  }
+  .detail-complete.checked .check{
+    background:var(--bg);
+    border-color:var(--bg);
+  }
+  .detail-complete.checked .check svg{
+    stroke:var(--accent);
+  }
+
+  .empty{
+    color:var(--muted);
+    text-align:center;
+    padding:50px 20px;
+    font-size:14px;
+  }
+  .empty .empty-icon{
+    width:44px;
+    height:44px;
+    stroke:var(--muted);
+    fill:none;
+    stroke-width:1.5;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+    margin-bottom:10px;
+  }
+  .empty .empty-title{
+    font-size:15px;
+    font-weight:700;
+    color:#fff;
+    margin:0 0 6px;
+  }
+  .empty .empty-hint{
+    font-size:12px;
+    line-height:1.5;
+    color:var(--muted);
+    margin:0;
+  }
+  .empty code{
+    background:#1c2530;
+    color:var(--accent);
+    padding:1px 5px;
+    border-radius:4px;
+    font-size:11px;
+  }
+
+  .load-more{
+    display:block;
+    width:100%;
+    margin:6px 0 14px;
+    padding:12px;
+    border:none;
+    border-radius:12px;
+    background:#161b22;
+    color:var(--accent);
+    font-family:inherit;
+    font-size:13px;
+    font-weight:700;
+    cursor:pointer;
+  }
+
+  /* Swipe hint ghost animation */
+  @keyframes swipeHint{
+    0%{transform:translateX(0);}
+    25%{transform:translateX(-22px);}
+    55%{transform:translateX(10px);}
+    100%{transform:translateX(0);}
+  }
+  .swipe-hint{
+    animation:swipeHint 1.1s ease;
+  }
+
+  /* Bottom tab bar */
+  nav.tabbar{
+    position:fixed;
+    bottom:0;
+    left:50%;
+    transform:translateX(-50%);
+    width:100%;
+    max-width:430px;
+    display:flex;
+    background:#161b22;
+    border-top:1px solid #232a35;
+    padding-bottom:env(safe-area-inset-bottom);
+    z-index:10;
+  }
+  nav.tabbar button{
+    flex:1;
+    background:none;
+    border:none;
+    color:var(--muted);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
+    padding:10px 4px 8px;
+    font-size:11px;
+    font-family:inherit;
+    cursor:pointer;
+  }
+  nav.tabbar button svg{
+    width:22px;
+    height:22px;
+    stroke:var(--muted);
+    fill:none;
+    stroke-width:1.8;
+    transition:stroke .15s ease;
+  }
+  nav.tabbar button.active{
+    color:var(--accent);
+  }
+  nav.tabbar button.active svg{
+    stroke:var(--accent);
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="session-bar">
+    <span class="session-name" id="session-name">Session</span>
+    <span class="session-date" id="session-date"></span>
+  </div>
+  <header>
+    <h1>On <span>Set</span></h1>
+    <div class="subtitle" id="subtitle">Shot List</div>
+  </header>
+
+  <main>
+    <section id="view-shots" class="view active">
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" id="shots-progress"></div></div>
+        <div class="progress-row">
+          <div class="progress-label" id="shots-progress-label"></div>
+          <button class="filter-btn" data-section="shots">Show unchecked only</button>
+        </div>
+      </div>
+      <div id="shots-list"></div>
+    </section>
+
+    <section id="view-broll" class="view">
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" id="broll-progress"></div></div>
+        <div class="progress-row">
+          <div class="progress-label" id="broll-progress-label"></div>
+          <button class="filter-btn" data-section="broll">Show unchecked only</button>
+        </div>
+      </div>
+      <div id="broll-list"></div>
+    </section>
+
+    <section id="view-production" class="view">
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" id="production-progress"></div></div>
+        <div class="progress-label" id="production-progress-label"></div>
+      </div>
+      <button class="reset-btn" id="reset-session">Reset session</button>
+      <div id="production-list"></div>
+    </section>
+  </main>
+
+  <nav class="tabbar">
+    <button class="tab-btn active" data-view="shots" data-title="Shot List">
+      <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      <span>Shots</span>
+    </button>
+    <button class="tab-btn" data-view="broll" data-title="B-Roll List">
+      <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M2 8h4M2 16h4M18 8h4M18 16h4M6 3v18M18 3v18"/></svg>
+      <span>B-Roll</span>
+    </button>
+    <button class="tab-btn" data-view="production" data-title="Production Checklist">
+      <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      <span>Checklist</span>
+    </button>
+  </nav>
+
+  <div class="overlay" id="detail-overlay">
+    <div class="detail-sheet">
+      <div class="detail-topbar">
+        <span class="pos" id="detail-pos"></span>
+        <div class="detail-dots" id="detail-dots"></div>
+        <button class="detail-close" id="detail-close">✕</button>
+      </div>
+      <div class="detail-viewport" id="detail-viewport">
+        <div class="detail-track" id="detail-track"></div>
+      </div>
+      <div class="detail-navbar">
+        <button class="detail-arrow prev" id="detail-prev">
+          <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+          PREV
+        </button>
+        <button class="detail-arrow next" id="detail-next">
+          NEXT
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+
+  // ---------- Sample fallback data ----------
+  const SAMPLE_SHOTS = [
+    {
+      id:"shot-001",
+      ubicacion:"Estudio - Fondo blanco",
+      pieza:"Vestido floral verano",
+      clip:"Clip A",
+      tipo_de_toma:"Plano medio",
+      modelos:"Camila",
+      personaje:"Cliente casual",
+      vestuario_nota:"Sandalias nude, cabello suelto",
+      descripcion_guion:"La modelo camina hacia cámara y gira mostrando el vestido.",
+      duracion:"8s",
+      audio_texto:"\"Este vestido es perfecto para el verano.\""
+    },
+    {
+      id:"shot-002",
+      ubicacion:"Exterior - Terraza",
+      pieza:"Conjunto deportivo",
+      clip:"Clip B",
+      tipo_de_toma:"Primer plano",
+      modelos:"Daniela",
+      personaje:"Atleta",
+      vestuario_nota:"Tenis blancos, cabello en cola",
+      descripcion_guion:"Primer plano de la tela mientras la modelo estira los brazos.",
+      duracion:"5s",
+      audio_texto:""
+    },
+    {
+      id:"shot-003",
+      ubicacion:"Estudio - Fondo gris",
+      pieza:"Blazer oversize",
+      clip:"Clip C",
+      tipo_de_toma:"Plano americano",
+      modelos:"Camila, Daniela",
+      personaje:"Ejecutivas",
+      vestuario_nota:"Pantalón negro, tacones",
+      descripcion_guion:"Ambas modelos caminan en sincronía hacia la cámara.",
+      duracion:"10s",
+      audio_texto:"\"Look profesional sin esfuerzo.\""
+    },
+    {
+      id:"shot-004",
+      ubicacion:"Exterior - Calle urbana",
+      pieza:"Jeans rectos",
+      clip:"Clip D",
+      tipo_de_toma:"Plano detalle",
+      modelos:"Daniela",
+      personaje:"N/A",
+      vestuario_nota:"Botines cafés",
+      descripcion_guion:"Detalle de bolsillos y costura mientras camina.",
+      duracion:"4s",
+      audio_texto:""
+    }
+  ];
+
+  const SAMPLE_BROLL = [
+    {
+      id:"broll-001",
+      categoria_ubicacion:"Estudio",
+      descripcion_toma:"Detalle de telas colgadas en el rack antes de la sesión",
+      modelos:"N/A",
+      angulo_tipo:"Cenital",
+      uso_sugerido:"Intro / transición",
+      duracion:"6s",
+      notas:"Buena luz natural por la mañana"
+    },
+    {
+      id:"broll-002",
+      categoria_ubicacion:"Backstage",
+      descripcion_toma:"Maquillaje y peinado de las modelos",
+      modelos:"Camila, Daniela",
+      angulo_tipo:"Plano medio",
+      uso_sugerido:"Behind the scenes / reels",
+      duracion:"15s",
+      notas:"Pedir autorización para mostrar rostro sin maquillaje"
+    },
+    {
+      id:"broll-003",
+      categoria_ubicacion:"Exterior - Calle urbana",
+      descripcion_toma:"Toma amplia del entorno y tráfico peatonal",
+      modelos:"N/A",
+      angulo_tipo:"Gran angular",
+      uso_sugerido:"Establishing shot",
+      duracion:"8s",
+      notas:""
+    },
+    {
+      id:"broll-004",
+      categoria_ubicacion:"Estudio",
+      descripcion_toma:"Manos doblando y acomodando prendas",
+      modelos:"N/A",
+      angulo_tipo:"Primer plano",
+      uso_sugerido:"Catálogo / producto",
+      duracion:"5s",
+      notas:"Usar fondo neutro"
+    }
+  ];
+
+  const SAMPLE_PRODUCTION = [
+    { id:"prod-001", categoria:"Equipo de cámara", item:"Cámara cargada y con tarjeta vacía", notas:"Llevar tarjeta extra de respaldo" },
+    { id:"prod-002", categoria:"Equipo de cámara", item:"Trípode y estabilizador", notas:"" },
+    { id:"prod-003", categoria:"Equipo de cámara", item:"Lentes limpios y baterías cargadas", notas:"Llevar 2 baterías extra" },
+    { id:"prod-004", categoria:"Iluminación", item:"Paneles LED y difusores", notas:"" },
+    { id:"prod-005", categoria:"Iluminación", item:"Reflectores y extensiones eléctricas", notas:"Confirmar tomas de corriente en locación" },
+    { id:"prod-006", categoria:"Audio", item:"Micrófono lavalier y grabadora", notas:"Probar niveles antes de iniciar" },
+    { id:"prod-007", categoria:"Audio", item:"Audífonos para monitoreo", notas:"" },
+    { id:"prod-008", categoria:"Props", item:"Accesorios y utilería por escena", notas:"Revisar lista con dirección de arte" },
+    { id:"prod-009", categoria:"Vestuario", item:"Confirmar prendas por look y talla", notas:"Revisar lista con estilista" },
+    { id:"prod-010", categoria:"Vestuario", item:"Plancha y kit de costura de emergencia", notas:"" },
+    { id:"prod-011", categoria:"Locación", item:"Permisos de grabación en exteriores", notas:"Validar horario permitido" },
+    { id:"prod-012", categoria:"Locación", item:"Confirmar disponibilidad de luz natural", notas:"Sesión exterior antes de las 11am" }
+  ];
+
+  // ---------- State ----------
+  const STORAGE_KEY = "onset_state_v1";
+  let state = loadState();
+  let filters = { shots:false, broll:false }; // true = show unchecked only
+  let dataStore = { shots:[], broll:[], production:[] };
+  let detailCtx = null; // { section, items, index }
+  const PAGE_SIZE = 20;
+  let visibleCount = { shots: PAGE_SIZE, broll: PAGE_SIZE };
+  const SESSION_KEY = "onset_session_name";
+  const SWIPE_HINT_KEY = "swipe_hint_shown";
+
+  function vibrate(){
+    try{ if(navigator.vibrate) navigator.vibrate(30); }catch(e){}
+  }
+
+  function setupSessionBar(){
+    const nameEl = document.getElementById("session-name");
+    const dateEl = document.getElementById("session-date");
+    nameEl.textContent = localStorage.getItem(SESSION_KEY) || "Session";
+    dateEl.textContent = new Date().toLocaleDateString(undefined, { weekday:"short", year:"numeric", month:"short", day:"numeric" });
+    nameEl.addEventListener("click", () => {
+      const current = localStorage.getItem(SESSION_KEY) || "Session";
+      const next = prompt("Session name:", current);
+      if(next === null) return;
+      const trimmed = next.trim() || "Session";
+      localStorage.setItem(SESSION_KEY, trimmed);
+      nameEl.textContent = trimmed;
+    });
+  }
+
+  function loadState(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : { shots:{}, broll:{}, production:{} };
+    }catch(e){
+      return { shots:{}, broll:{}, production:{} };
+    }
+  }
+
+  function saveState(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  // ---------- Data loading ----------
+  async function fetchData(url, fallback){
+    try{
+      const res = await fetch(url);
+      if(!res.ok) throw new Error("not found");
+      const data = await res.json();
+      if(!Array.isArray(data) || data.length === 0) throw new Error("empty");
+      return data;
+    }catch(e){
+      return fallback;
+    }
+  }
+
+  // ---------- Helpers ----------
+  function checkIcon(){
+    return '<svg viewBox="0 0 24 24" stroke="#0D1117" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+  }
+
+  function badge(text){
+    return text ? `<span class="badge">${escapeHtml(text)}</span>` : "";
+  }
+
+  function escapeHtml(str){
+    if(str === undefined || str === null) return "";
+    return String(str)
+      .replace(/&/g,"&amp;")
+      .replace(/</g,"&lt;")
+      .replace(/>/g,"&gt;");
+  }
+
+  function updateProgress(items, stateMap, barId, labelId, noun){
+    const total = items.length;
+    const done = items.filter(it => stateMap[it.id]).length;
+    const pct = total ? Math.round((done/total)*100) : 0;
+    document.getElementById(barId).style.width = pct + "%";
+    const label = labelId === "production-progress-label"
+      ? `${done} of ${total} ${noun} ready`
+      : `${done} / ${total} ${noun} completed`;
+    document.getElementById(labelId).textContent = label;
+  }
+
+  // ---------- Renderers ----------
+  function emptyState(filename){
+    return `
+      <div class="empty">
+        <svg class="empty-icon" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M2 8h4M2 16h4M18 8h4M18 16h4M6 3v18M18 3v18"/></svg>
+        <p class="empty-title">No hay items cargados</p>
+        <p class="empty-hint">Coloca un archivo <code>${filename}</code> junto a <code>index.html</code> y recarga la página.</p>
+      </div>`;
+  }
+
+  function renderShots(items){
+    const container = document.getElementById("shots-list");
+    const visible = filters.shots ? items.filter(it => !state.shots[it.id]) : items;
+    if(!items.length){
+      container.innerHTML = emptyState("shots.json");
+      return;
+    }
+    if(!visible.length){
+      container.innerHTML = '<div class="empty">All shots checked 🎬</div>';
+      return;
+    }
+    const slice = visible.slice(0, visibleCount.shots);
+    container.innerHTML = slice.map(item => {
+      const checked = !!state.shots[item.id];
+      return `
+      <div class="card ${checked ? "completed":""}" data-id="${item.id}" data-section="shots">
+        <p class="card-title"><span class="clip-num">${escapeHtml(item.clip)}</span>${badge(item.tipo_de_toma)}<span class="ubicacion">${escapeHtml(item.ubicacion)}</span></p>
+        <p class="card-row"><b>${escapeHtml(item.personaje)}</b> · ${escapeHtml(item.modelos)}</p>
+        ${item.descripcion_guion ? `<p class="card-desc">${escapeHtml(item.descripcion_guion)}</p>` : ""}
+        <div class="card-footer">
+          <div class="badges">
+            ${item.duracion ? `<span class="badge duration">${escapeHtml(item.duracion)}</span>` : ""}
+          </div>
+          <div class="check ${checked ? "checked":""}" data-id="${item.id}" data-section="shots">${checkIcon()}</div>
+        </div>
+      </div>`;
+    }).join("") + (visible.length > slice.length ? `<button class="load-more" data-section="shots">Load more (${visible.length - slice.length})</button>` : "");
+  }
+
+  function renderBroll(items){
+    const container = document.getElementById("broll-list");
+    const visible = filters.broll ? items.filter(it => !state.broll[it.id]) : items;
+    if(!items.length){
+      container.innerHTML = emptyState("broll.json");
+      return;
+    }
+    if(!visible.length){
+      container.innerHTML = '<div class="empty">All b-roll checked 🎬</div>';
+      return;
+    }
+    const slice = visible.slice(0, visibleCount.broll);
+    container.innerHTML = slice.map(item => {
+      const checked = !!state.broll[item.id];
+      return `
+      <div class="card ${checked ? "completed":""}" data-id="${item.id}" data-section="broll">
+        <p class="card-title">${escapeHtml(item.categoria_ubicacion)}${badge(item.angulo_tipo)}</p>
+        ${item.modelos && item.modelos !== "N/A" ? `<p class="card-row"><b>${escapeHtml(item.modelos)}</b></p>` : ""}
+        ${item.descripcion_toma ? `<p class="card-desc">${escapeHtml(item.descripcion_toma)}</p>` : ""}
+        <div class="card-footer">
+          <div class="badges">
+            ${item.duracion ? `<span class="badge duration">${escapeHtml(item.duracion)}</span>` : ""}
+            ${badge(item.uso_sugerido)}
+          </div>
+          <div class="check ${checked ? "checked":""}" data-id="${item.id}" data-section="broll">${checkIcon()}</div>
+        </div>
+      </div>`;
+    }).join("") + (visible.length > slice.length ? `<button class="load-more" data-section="broll">Load more (${visible.length - slice.length})</button>` : "");
+  }
+
+  let collapsedGroups = {};
+
+  function renderProduction(items){
+    const container = document.getElementById("production-list");
+    if(!items.length){
+      container.innerHTML = `
+        <div class="empty">
+          <svg class="empty-icon" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          <p class="empty-title">No hay items cargados</p>
+          <p class="empty-hint">Coloca un archivo <code>production.json</code> junto a <code>index.html</code> y recarga la página.</p>
+        </div>`;
+      return;
+    }
+    // group by categoria, preserving order of first appearance
+    const groups = [];
+    const groupMap = {};
+    items.forEach(item => {
+      const cat = item.categoria || "General";
+      if(!groupMap[cat]){
+        groupMap[cat] = [];
+        groups.push(cat);
+      }
+      groupMap[cat].push(item);
+    });
+
+    container.innerHTML = groups.map(cat => {
+      const groupItems = groupMap[cat];
+      const done = groupItems.filter(it => state.production[it.id]).length;
+      const collapsed = !!collapsedGroups[cat];
+      const rows = groupItems.map(item => {
+        const checked = !!state.production[item.id];
+        return `
+        <div class="check-row ${checked ? "checked":""}">
+          <div class="check ${checked ? "checked":""}" data-id="${item.id}">${checkIcon()}</div>
+          <div class="row-tap" data-id="${item.id}">
+            <p class="row-title">${escapeHtml(item.item)}</p>
+            ${item.notas ? `<p class="row-notas">${escapeHtml(item.notas)}</p>` : ""}
+          </div>
+        </div>`;
+      }).join("");
+      return `
+      <div class="group ${collapsed ? "collapsed":""}" data-cat="${escapeHtml(cat)}">
+        <div class="group-header" data-cat="${escapeHtml(cat)}">
+          <span class="name">${escapeHtml(cat)}</span>
+          <span class="count">
+            ${done}/${groupItems.length}
+            <svg class="chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </span>
+        </div>
+        <div class="group-items">${rows}</div>
+      </div>`;
+    }).join("");
+  }
+
+  // ---------- Toggle handling ----------
+  function toggleItem(stateKey, id){
+    state[stateKey][id] = !state[stateKey][id];
+    saveState();
+    vibrate();
+  }
+
+  function attachCardHandlers(containerSelector, items, stateKey, barId, labelId, noun, renderFn){
+    document.querySelector(containerSelector).addEventListener("click", (e) => {
+      const loadMore = e.target.closest(".load-more");
+      if(loadMore){
+        visibleCount[stateKey] += PAGE_SIZE;
+        renderFn(items);
+        return;
+      }
+      const checkEl = e.target.closest(".check");
+      if(checkEl){
+        toggleItem(stateKey, checkEl.dataset.id);
+        renderFn(items);
+        updateProgress(items, state[stateKey], barId, labelId, noun);
+        return;
+      }
+      const card = e.target.closest(".card");
+      if(card){
+        const visible = filters[stateKey] ? items.filter(it => !state[stateKey][it.id]) : items;
+        const index = visible.findIndex(it => it.id === card.dataset.id);
+        openDetail(stateKey, visible, index, { items, barId, labelId, noun, renderFn });
+      }
+    });
+  }
+
+  function attachFilterHandler(stateKey, items, barId, labelId, noun, renderFn){
+    const btn = document.querySelector(`.filter-btn[data-section="${stateKey}"]`);
+    btn.addEventListener("click", () => {
+      filters[stateKey] = !filters[stateKey];
+      visibleCount[stateKey] = PAGE_SIZE;
+      btn.classList.toggle("active", filters[stateKey]);
+      btn.textContent = filters[stateKey] ? "Show all" : "Show unchecked only";
+      renderFn(items);
+    });
+  }
+
+  // ---------- Detail / carousel ----------
+  function buildShotPage(item){
+    const checked = !!state.shots[item.id];
+    return `
+      <div class="detail-headblock">
+        <span class="clip-num">${escapeHtml(item.clip)}</span>
+        <p class="pieza">${escapeHtml(item.pieza)}</p>
+        <span class="ubicacion">${escapeHtml(item.ubicacion)}</span>
+      </div>
+      <div class="detail-section">
+        <div class="badges-row">
+          ${badge(item.tipo_de_toma)}
+        </div>
+        <div class="detail-field">
+          <p class="label">Personaje</p>
+          <p class="value">${escapeHtml(item.personaje)}</p>
+        </div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-field">
+          <p class="label">Modelo(s)</p>
+          <p class="value">${escapeHtml(item.modelos)}</p>
+        </div>
+        ${item.vestuario_nota ? `<div class="detail-field"><p class="label">Vestuario / nota modelo</p><p class="value">${escapeHtml(item.vestuario_nota)}</p></div>` : ""}
+      </div>
+      <div class="detail-section">
+        <div class="detail-field">
+          <p class="label">Descripción / guión</p>
+          <p class="value">${escapeHtml(item.descripcion_guion) || "—"}</p>
+        </div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-field">
+          <p class="label">Duración</p>
+          <p class="value">${escapeHtml(item.duracion) || "—"}</p>
+        </div>
+        <div class="detail-field">
+          <p class="label">Audio / texto en pantalla</p>
+          <p class="value">${escapeHtml(item.audio_texto) || "—"}</p>
+        </div>
+      </div>
+      <button class="detail-complete ${checked ? "checked":""}" data-id="${item.id}">
+        <span class="check ${checked ? "checked":""}">${checkIcon()}</span>
+        Marcar como completado
+      </button>
+    `;
+  }
+
+  function buildBrollPage(item){
+    const checked = !!state.broll[item.id];
+    return `
+      <div class="detail-headblock">
+        <p class="pieza">${escapeHtml(item.categoria_ubicacion)}</p>
+      </div>
+      <div class="detail-section">
+        <div class="badges-row">
+          ${badge(item.angulo_tipo)}
+          ${badge(item.uso_sugerido)}
+        </div>
+      </div>
+      ${item.modelos && item.modelos !== "N/A" ? `
+      <div class="detail-section">
+        <div class="detail-field">
+          <p class="label">Modelo(s)</p>
+          <p class="value">${escapeHtml(item.modelos)}</p>
+        </div>
+      </div>` : ""}
+      <div class="detail-section">
+        <div class="detail-field">
+          <p class="label">Descripción de la toma</p>
+          <p class="value">${escapeHtml(item.descripcion_toma) || "—"}</p>
+        </div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-field">
+          <p class="label">Duración</p>
+          <p class="value">${escapeHtml(item.duracion) || "—"}</p>
+        </div>
+        <div class="detail-field">
+          <p class="label">Notas</p>
+          <p class="value">${escapeHtml(item.notas) || "—"}</p>
+        </div>
+      </div>
+      <button class="detail-complete ${checked ? "checked":""}" data-id="${item.id}">
+        <span class="check ${checked ? "checked":""}">${checkIcon()}</span>
+        Marcar como completado
+      </button>
+    `;
+  }
+
+  function openDetail(stateKey, items, index, ctx){
+    detailCtx = { stateKey, items, index, ...ctx, dragOffset:0 };
+    const track = document.getElementById("detail-track");
+    const buildFn = stateKey === "shots" ? buildShotPage : buildBrollPage;
+    track.innerHTML = items.map(item => `<div class="detail-page">${buildFn(item)}</div>`).join("");
+    track.style.transition = "none";
+    setSlide(index, false);
+    requestAnimationFrame(() => { track.style.transition = ""; });
+
+    const dots = document.getElementById("detail-dots");
+    dots.innerHTML = items.map((_,i) => `<span class="dot"></span>`).join("");
+
+    renderDetail();
+    document.getElementById("detail-overlay").classList.add("open");
+
+    if(!localStorage.getItem(SWIPE_HINT_KEY)){
+      const page = document.querySelectorAll("#detail-track .detail-page")[index];
+      setTimeout(() => {
+        page.classList.add("swipe-hint");
+        page.addEventListener("animationend", () => page.classList.remove("swipe-hint"), { once:true });
+      }, 350);
+      localStorage.setItem(SWIPE_HINT_KEY, "1");
+    }
+  }
+
+  function closeDetail(){
+    document.getElementById("detail-overlay").classList.remove("open");
+    detailCtx = null;
+  }
+
+  function setSlide(index, animate){
+    const track = document.getElementById("detail-track");
+    if(animate === false) track.style.transition = "none";
+    track.style.transform = `translateX(-${index * 100}%)`;
+    if(animate === false){
+      requestAnimationFrame(() => { track.style.transition = ""; });
+    }
+  }
+
+  function renderDetail(){
+    if(!detailCtx) return;
+    const { stateKey, items, index } = detailCtx;
+
+    document.getElementById("detail-pos").textContent = `${index+1} / ${items.length}`;
+    document.querySelectorAll("#detail-dots .dot").forEach((d,i) => {
+      d.classList.toggle("active", i === index);
+    });
+
+    document.getElementById("detail-prev").disabled = index === 0;
+    document.getElementById("detail-next").disabled = index === items.length - 1;
+
+    setSlide(index);
+  }
+
+  function goTo(newIndex){
+    if(!detailCtx) return;
+    if(newIndex < 0 || newIndex > detailCtx.items.length - 1) return;
+    detailCtx.index = newIndex;
+    renderDetail();
+  }
+
+  function syncDetailCheckbox(){
+    if(!detailCtx) return;
+    const { stateKey, items, index } = detailCtx;
+    const item = items[index];
+    const checked = !!state[stateKey][item.id];
+    const page = document.querySelectorAll("#detail-track .detail-page")[index];
+    const btn = page.querySelector(".detail-complete");
+    const check = page.querySelector(".check");
+    btn.classList.toggle("checked", checked);
+    check.classList.toggle("checked", checked);
+  }
+
+  function setupDetailOverlay(){
+    const overlay = document.getElementById("detail-overlay");
+    const viewport = document.getElementById("detail-viewport");
+    const track = document.getElementById("detail-track");
+
+    document.getElementById("detail-close").addEventListener("click", closeDetail);
+
+    document.getElementById("detail-prev").addEventListener("click", () => goTo(detailCtx.index - 1));
+    document.getElementById("detail-next").addEventListener("click", () => goTo(detailCtx.index + 1));
+
+    document.addEventListener("keydown", (e) => {
+      if(!overlay.classList.contains("open")) return;
+      if(e.key === "ArrowLeft") goTo(detailCtx.index - 1);
+      if(e.key === "ArrowRight") goTo(detailCtx.index + 1);
+      if(e.key === "Escape") closeDetail();
+    });
+
+    track.addEventListener("click", (e) => {
+      const btn = e.target.closest(".detail-complete");
+      if(!btn || !detailCtx) return;
+      const { stateKey, barId, labelId, noun, renderFn } = detailCtx;
+      toggleItem(stateKey, btn.dataset.id);
+      syncDetailCheckbox();
+      renderFn(dataStore[stateKey]);
+      updateProgress(dataStore[stateKey], state[stateKey], barId, labelId, noun);
+    });
+
+    // Swipe handling
+    let touchStartX = 0, touchStartY = 0, touching = false;
+    viewport.addEventListener("touchstart", (e) => {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+      touching = true;
+      track.style.transition = "none";
+    }, { passive:true });
+
+    viewport.addEventListener("touchmove", (e) => {
+      if(!touching || !detailCtx) return;
+      const dx = e.touches[0].clientX - touchStartX;
+      const dy = e.touches[0].clientY - touchStartY;
+      if(Math.abs(dx) < Math.abs(dy)) return;
+      detailCtx.dragOffset = dx;
+      const pct = (detailCtx.index * 100) - (dx / viewport.clientWidth * 100);
+      track.style.transform = `translateX(-${pct}%)`;
+    }, { passive:true });
+
+    viewport.addEventListener("touchend", (e) => {
+      if(!touching || !detailCtx) return;
+      touching = false;
+      track.style.transition = "";
+      const dx = detailCtx.dragOffset || 0;
+      detailCtx.dragOffset = 0;
+      const THRESHOLD = 50;
+      if(dx <= -THRESHOLD){
+        goTo(detailCtx.index + 1);
+      }else if(dx >= THRESHOLD){
+        goTo(detailCtx.index - 1);
+      }else{
+        setSlide(detailCtx.index);
+      }
+    });
+  }
+
+  // ---------- Tab switching ----------
+  function setupTabs(){
+    const buttons = document.querySelectorAll(".tab-btn");
+    const views = {
+      shots: document.getElementById("view-shots"),
+      broll: document.getElementById("view-broll"),
+      production: document.getElementById("view-production")
+    };
+    const subtitle = document.getElementById("subtitle");
+
+    buttons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        buttons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        Object.values(views).forEach(v => v.classList.remove("active"));
+        views[btn.dataset.view].classList.add("active");
+        subtitle.textContent = btn.dataset.title;
+      });
+    });
+  }
+
+  // ---------- Init ----------
+  async function init(){
+    setupTabs();
+    setupDetailOverlay();
+    setupSessionBar();
+
+    const [shots, broll, production] = await Promise.all([
+      fetchData("shots.json", SAMPLE_SHOTS),
+      fetchData("broll.json", SAMPLE_BROLL),
+      fetchData("production.json", SAMPLE_PRODUCTION)
+    ]);
+    dataStore = { shots, broll, production };
+
+    renderShots(shots);
+    renderBroll(broll);
+    renderProduction(production);
+
+    updateProgress(shots, state.shots, "shots-progress", "shots-progress-label", "shots");
+    updateProgress(broll, state.broll, "broll-progress", "broll-progress-label", "shots");
+    updateProgress(production, state.production, "production-progress", "production-progress-label", "items");
+
+    attachCardHandlers("#shots-list", shots, "shots", "shots-progress", "shots-progress-label", "shots", renderShots);
+    attachCardHandlers("#broll-list", broll, "broll", "broll-progress", "broll-progress-label", "shots", renderBroll);
+    attachFilterHandler("shots", shots, "shots-progress", "shots-progress-label", "shots", renderShots);
+    attachFilterHandler("broll", broll, "broll-progress", "broll-progress-label", "shots", renderBroll);
+
+    document.querySelector("#production-list").addEventListener("click", (e) => {
+      const header = e.target.closest(".group-header");
+      if(header){
+        const cat = header.dataset.cat;
+        collapsedGroups[cat] = !collapsedGroups[cat];
+        renderProduction(production);
+        return;
+      }
+      const target = e.target.closest(".check, .row-tap");
+      if(!target) return;
+      toggleItem("production", target.dataset.id);
+      renderProduction(production);
+      updateProgress(production, state.production, "production-progress", "production-progress-label", "items");
+    });
+
+    document.getElementById("reset-session").addEventListener("click", () => {
+      if(!confirm("Reset session? This will clear all checked items in Shot List, B-Roll List and Production Checklist.")) return;
+      state = { shots:{}, broll:{}, production:{} };
+      saveState();
+      renderShots(dataStore.shots);
+      renderBroll(dataStore.broll);
+      renderProduction(dataStore.production);
+      updateProgress(dataStore.shots, state.shots, "shots-progress", "shots-progress-label", "shots");
+      updateProgress(dataStore.broll, state.broll, "broll-progress", "broll-progress-label", "shots");
+      updateProgress(dataStore.production, state.production, "production-progress", "production-progress-label", "items");
+    });
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>
